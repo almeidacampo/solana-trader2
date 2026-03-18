@@ -1,8 +1,4 @@
 {
-  "functions": {
-    "analyze.js": { "memory": 512 },
-    "price.js": { "memory": 512 }
-  },
   "rewrites": [
     { "source": "/api/analyze", "destination": "/analyze.js" },
     { "source": "/api/price", "destination": "/price.js" },
