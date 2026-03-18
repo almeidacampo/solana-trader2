@@ -650,7 +650,7 @@ window.addEventListener('load',()=>{
   const t=TOKENS[tokenAtual], m=mercado;
   content.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
+    const r=await fetch('https://',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:'Analise '+t.par+' preco $'+m.preco.toFixed(2)+' RSI '+m.rsi+' variacao '+m.var24.toFixed(2)+'%. De recomendacao COMPRAR VENDER ou AGUARDAR em 3 frases em portugues.'}]})
@@ -665,5 +665,24 @@ window.addEventListener('load',()=>{
     content.innerHTML='<div class="ai-response" style="color:var(--red);">Erro: '+e.message+'</div>';
   }
 }
-</body>
+</body>async function analisarIA(){
+  const content=document.getElementById('aiContent');
+  const t=TOKENS[tokenAtual], m=mercado;
+  content.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  try{
+    const r=await fetch('/api/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:t.nome,preco:m.preco,rsi:m.rsi,var24:m.var24})
+    });
+    const d=await r.json();
+    if(d.error) throw new Error(d.error);
+    let sigLabel='Aguardar',sigClass='hold';
+    if(d.sinal==='buy'){sigLabel='Comprar '+t.nome;sigClass='long';}
+    else if(d.sinal==='sell'){sigLabel='Vender '+t.nome;sigClass='short';}
+    content.innerHTML='<div class="ai-response fade-in">'+d.analise+'</div><div style="margin-top:10px;"><span class="ai-signal '+sigClass+'">'+sigLabel+'</span></div>';
+  }catch(e){
+    content.innerHTML='<div class="ai-response" style="color:var(--red);">Erro: '+e.message+'</div>';
+  }
+}
 </html>
