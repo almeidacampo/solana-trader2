@@ -434,7 +434,7 @@ async function analisarIA(){
   const t=TOKENS[tokenAtual], m=mercado;
   content.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
   try{
-    const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t.nome,preco:m.preco,var24:m.var24,rsi:m.rsi,ema9:m.ema9,ema21:m.ema21,vol:m.vol,balance:solBalance.toFixed(4)+' SOL'})});
+    const r=,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t.nome,preco:m.preco,var24:m.var24,rsi:m.rsi,ema9:m.ema9,ema21:m.ema21,vol:m.vol,balance:solBalance.toFixed(4)+' SOL'})});
     const d=await r.json();
     if(d.error) throw new Error(d.error);
     let sigLabel='Aguardar', sigClass='hold';
@@ -564,7 +564,7 @@ async function rodarAutoTrade() {
   addLog('Analisando '+t.par+' — RSI:'+m.rsi+' EMA:'+(m.ema9>m.ema21?'Bullish':'Bearish')+' Vol:'+m.vol+'%','');
 
   try {
-    const r = await fetch('/api/analyze', {
+    const r = , {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token:t.nome, preco:m.preco, var24:m.var24, rsi:m.rsi, ema9:m.ema9, ema21:m.ema21, vol:m.vol, balance:solBalance.toFixed(4)+' SOL'})
     });
@@ -645,6 +645,25 @@ window.addEventListener('load',()=>{
     }
   },500);
 });
-</script>
+</script>async function analisarIA(){
+  const content=document.getElementById('aiContent');
+  const t=TOKENS[tokenAtual], m=mercado;
+  content.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:'Analise '+t.par+' preco $'+m.preco.toFixed(2)+' RSI '+m.rsi+' variacao '+m.var24.toFixed(2)+'%. De recomendacao COMPRAR VENDER ou AGUARDAR em 3 frases em portugues.'}]})
+    });
+    const d=await r.json();
+    const texto=d.content?.[0]?.text||'Erro na analise.';
+    let sigLabel='Aguardar',sigClass='hold';
+    if(/comprar|compra|alta/i.test(texto)){sigLabel='Comprar '+t.nome;sigClass='long';}
+    else if(/vender|venda|baixa/i.test(texto)){sigLabel='Vender '+t.nome;sigClass='short';}
+    content.innerHTML='<div class="ai-response fade-in">'+texto+'</div><div style="margin-top:10px;"><span class="ai-signal '+sigClass+'">'+sigLabel+'</span></div>';
+  }catch(e){
+    content.innerHTML='<div class="ai-response" style="color:var(--red);">Erro: '+e.message+'</div>';
+  }
+}
 </body>
 </html>
