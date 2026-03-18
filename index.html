@@ -97,31 +97,7 @@ footer{border-top:1px solid var(--border);padding:18px 0;text-align:center;font-
 .not-connected-msg{text-align:center;padding:48px 20px;color:var(--text3);}
 .not-connected-msg .big{font-size:44px;margin-bottom:14px;}
 .not-connected-msg p{font-size:14px;line-height:1.7;max-width:380px;margin:0 auto;}
-
-  .auto-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:22px;}
-  .auto-title{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;margin-bottom:14px;}
-  .auto-status{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-  .auto-dot{width:10px;height:10px;border-radius:50%;background:var(--text3);flex-shrink:0;}
-  .auto-dot.ativo{background:var(--green);animation:pulse 1.5s ease-in-out infinite;}
-  .auto-dot.aguardando{background:var(--amber);animation:pulse 1.5s ease-in-out infinite;}
-  .auto-label{font-family:'Space Mono',monospace;font-size:13px;color:var(--text2);}
-  .btn-auto-on{width:100%;padding:13px;border-radius:12px;border:1px solid var(--green-border);background:var(--green-bg);color:var(--green);font-family:'Space Mono',monospace;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:8px;}
-  .btn-auto-on:hover{background:rgba(0,229,160,0.15);}
-  .btn-auto-off{width:100%;padding:13px;border-radius:12px;border:1px solid var(--red-border);background:var(--red-bg);color:var(--red);font-family:'Space Mono',monospace;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none;}
-  .btn-auto-off:hover{background:rgba(255,77,106,0.15);}
-  .btn-fechar-pos{width:100%;padding:13px;border-radius:12px;border:1px solid var(--amber);background:var(--amber-bg);color:var(--amber);font-family:'Space Mono',monospace;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none;margin-top:8px;}
-  .btn-fechar-pos:hover{background:rgba(245,166,35,0.15);}
-  .auto-log{background:var(--bg3);border-radius:10px;padding:12px;margin-top:14px;max-height:160px;overflow-y:auto;font-family:'Space Mono',monospace;font-size:11px;color:var(--text3);line-height:1.8;}
-  .log-green{color:var(--green);}
-  .log-red{color:var(--red);}
-  .log-amber{color:var(--amber);}
-  .auto-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-  @media(max-width:500px){.auto-grid{grid-template-columns:1fr;}}
-  .auto-stat{background:var(--bg3);border-radius:10px;padding:10px 12px;}
-  .auto-stat-label{font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:4px;text-transform:uppercase;}
-  .auto-stat-value{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--text);}
-
-  .fade-in{animation:fadeIn 0.4s ease forwards;}
+.fade-in{animation:fadeIn 0.4s ease forwards;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite;display:inline-block;margin-right:4px;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
@@ -262,38 +238,6 @@ footer{border-top:1px solid var(--border);padding:18px 0;text-align:center;font-
     </div>
 
     <!-- Histórico -->
-
-    <div class="auto-box fade-in">
-      <div class="auto-title">Auto Trade — IA opera sozinha</div>
-      <div class="auto-grid">
-        <div class="auto-stat"><div class="auto-stat-label">Par ativo</div><div class="auto-stat-value" id="autoPar">SOL/USDC</div></div>
-        <div class="auto-stat"><div class="auto-stat-label">Intervalo</div><div class="auto-stat-value" id="autoIntervalo">30s</div></div>
-        <div class="auto-stat"><div class="auto-stat-label">Trades auto</div><div class="auto-stat-value" id="autoCount">0</div></div>
-        <div class="auto-stat"><div class="auto-stat-label">P&L auto</div><div class="auto-stat-value" id="autoPnl">$0.00</div></div>
-      </div>
-      <div class="auto-status">
-        <div class="auto-dot" id="autoDot"></div>
-        <div class="auto-label" id="autoLabel">Auto Trade desligado</div>
-      </div>
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:5px;">Intervalo de análise</label>
-        <select id="autoInterval" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:8px 12px;border-radius:8px;outline:none;width:100%;">
-          <option value="30000">30 segundos</option>
-          <option value="60000">1 minuto</option>
-          <option value="300000">5 minutos</option>
-          <option value="600000">10 minutos</option>
-        </select>
-      </div>
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:5px;">Valor por trade (USDC)</label>
-        <input type="number" id="autoValor" value="20" min="5" step="5" style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:8px 12px;border-radius:8px;outline:none;">
-      </div>
-      <button class="btn-auto-on" id="btnAutoOn" onclick="ligarAutoTrade()">▶ LIGAR AUTO TRADE</button>
-      <button class="btn-auto-off" id="btnAutoOff" onclick="desligarAutoTrade()">■ DESLIGAR AUTO TRADE</button>
-      <button class="btn-fechar-pos" id="btnFecharPos" onclick="fecharPosicaoAuto()">✕ FECHAR POSIÇÃO AGORA</button>
-      <div class="auto-log" id="autoLog">Aguardando início do Auto Trade...</div>
-    </div>
-
     <div class="hist-card fade-in">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
         <div class="hist-title" style="margin-bottom:0;">Histórico de operações</div>
@@ -434,16 +378,24 @@ async function analisarIA(){
   const t=TOKENS[tokenAtual], m=mercado;
   content.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
   try{
-    const r=,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t.nome,preco:m.preco,var24:m.var24,rsi:m.rsi,ema9:m.ema9,ema21:m.ema21,vol:m.vol,balance:solBalance.toFixed(4)+' SOL'})});
+    const r=await fetch('/api/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:t.nome,preco:m.preco,rsi:m.rsi,var24:m.var24})
+    });
     const d=await r.json();
     if(d.error) throw new Error(d.error);
-    let sigLabel='Aguardar', sigClass='hold';
+    let sigLabel='Aguardar',sigClass='hold';
     if(d.sinal==='buy'){sigLabel='Comprar '+t.nome;sigClass='long';}
     else if(d.sinal==='sell'){sigLabel='Vender '+t.nome;sigClass='short';}
     content.innerHTML='<div class="ai-response fade-in">'+d.analise+'</div><div style="margin-top:10px;"><span class="ai-signal '+sigClass+'">'+sigLabel+'</span></div>';
     await buscarPrecos(); mercado=gerarMercado(tokenAtual); atualizarMetricas(); atualizarPreviews();
-  }catch(e){ content.innerHTML='<div class="ai-response" style="color:var(--red);">Erro: '+e.message+'</div>'; }
+  }catch(e){
+    content.innerHTML='<div class="ai-response" style="color:var(--red);">Erro: '+e.message+'</div>';
+  }
 }
+
+
 
 async function executarTrade(tipo){
   if(!carteira){alert('Conecte sua Phantom Wallet primeiro!');return;}
@@ -508,136 +460,6 @@ function renderHistorico(){
 
 function limparHistorico(){if(historico.length&&confirm('Limpar historico?')){historico=[];renderHistorico();}}
 
-
-// ── AUTO TRADE ─────────────────────────────────
-let autoTradeAtivo = false;
-let autoInterval = null;
-let posicaoAutoAberta = false;
-let autoTradeCount = 0;
-let autoPnlTotal = 0;
-let precoEntradaAuto = 0;
-let valorAutoTrade = 20;
-let tipoAutoAberto = null;
-
-function addLog(msg, tipo) {
-  const log = document.getElementById('autoLog');
-  const hora = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  const cls = tipo==='green'?'log-green':tipo==='red'?'log-red':tipo==='amber'?'log-amber':'';
-  log.innerHTML += '<div class="'+ cls +'">['+hora+'] '+msg+'</div>';
-  log.scrollTop = log.scrollHeight;
-}
-
-function ligarAutoTrade() {
-  if(!carteira){alert('Conecte sua Phantom Wallet primeiro!');return;}
-  autoTradeAtivo = true;
-  valorAutoTrade = parseFloat(document.getElementById('autoValor').value)||20;
-  const intervalo = parseInt(document.getElementById('autoInterval').value)||30000;
-  document.getElementById('btnAutoOn').style.display='none';
-  document.getElementById('btnAutoOff').style.display='block';
-  document.getElementById('autoDot').className='auto-dot ativo';
-  document.getElementById('autoLabel').textContent='Auto Trade ativo — analisando mercado...';
-  document.getElementById('autoIntervalo').textContent = intervalo/1000 + 's';
-  addLog('Auto Trade ligado! Analisando '+TOKENS[tokenAtual].par+'...','green');
-  rodarAutoTrade();
-  autoInterval = setInterval(rodarAutoTrade, intervalo);
-}
-
-function desligarAutoTrade() {
-  autoTradeAtivo = false;
-  clearInterval(autoInterval);
-  document.getElementById('btnAutoOn').style.display='block';
-  document.getElementById('btnAutoOff').style.display='none';
-  document.getElementById('autoDot').className='auto-dot';
-  document.getElementById('autoLabel').textContent='Auto Trade desligado';
-  addLog('Auto Trade desligado.','amber');
-}
-
-async function rodarAutoTrade() {
-  if(!autoTradeAtivo) return;
-  const t = TOKENS[tokenAtual];
-  const m = gerarMercado(tokenAtual);
-  mercado = m;
-  atualizarMetricas();
-
-  document.getElementById('autoDot').className='auto-dot aguardando';
-  document.getElementById('autoLabel').textContent='Analisando '+t.par+'...';
-  addLog('Analisando '+t.par+' — RSI:'+m.rsi+' EMA:'+(m.ema9>m.ema21?'Bullish':'Bearish')+' Vol:'+m.vol+'%','');
-
-  try {
-    const r = , {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token:t.nome, preco:m.preco, var24:m.var24, rsi:m.rsi, ema9:m.ema9, ema21:m.ema21, vol:m.vol, balance:solBalance.toFixed(4)+' SOL'})
-    });
-    const d = await r.json();
-    if(d.error) throw new Error(d.error);
-
-    addLog('IA recomenda: '+(d.sinal==='buy'?'COMPRAR':d.sinal==='sell'?'VENDER':'AGUARDAR'),'amber');
-
-    if(posicaoAutoAberta) {
-      addLog('Posicao ja aberta — aguardando voce fechar manualmente.','amber');
-      document.getElementById('autoDot').className='auto-dot ativo';
-      document.getElementById('autoLabel').textContent='Posicao aberta — feche quando quiser!';
-      return;
-    }
-
-    if(d.sinal==='buy' && !posicaoAutoAberta) {
-      await abrirAutoTrade('BUY', m.preco);
-    } else if(d.sinal==='sell' && !posicaoAutoAberta) {
-      await abrirAutoTrade('SELL', m.preco);
-    } else {
-      addLog('Sem sinal claro — aguardando proxima analise...','');
-      document.getElementById('autoDot').className='auto-dot ativo';
-      document.getElementById('autoLabel').textContent='Aguardando sinal — proxima analise em breve...';
-    }
-  } catch(e) {
-    addLog('Erro na analise: '+e.message,'red');
-    document.getElementById('autoDot').className='auto-dot ativo';
-  }
-}
-
-async function abrirAutoTrade(tipo, preco) {
-  const phantom = window.solana;
-  if(!phantom){addLog('Phantom nao encontrada!','red');return;}
-  try {
-    const msgBytes = new TextEncoder().encode('AutoTrade: '+tipo+' '+valorAutoTrade+' USDC @ $'+preco.toFixed(2));
-    await phantom.signMessage(msgBytes,'utf8');
-    posicaoAutoAberta = true;
-    precoEntradaAuto = preco;
-    tipoAutoAberto = tipo;
-    autoTradeCount++;
-    document.getElementById('autoCount').textContent = autoTradeCount;
-    document.getElementById('btnFecharPos').style.display='block';
-    document.getElementById('autoDot').className='auto-dot ativo';
-    document.getElementById('autoLabel').textContent=(tipo==='BUY'?'LONG aberto':'SHORT aberto')+' @ $'+preco.toFixed(2)+' — feche quando quiser!';
-    addLog((tipo==='BUY'?'LONG':'SHORT')+' aberto @ $'+preco.toFixed(2)+' — valor: $'+valorAutoTrade,'green');
-    tradesCount++;
-    historico.unshift({n:tradesCount, tipo, token:TOKENS[tokenAtual].nome, gasta:'$'+valorAutoTrade+' USDC', recebe:'auto', preco, txId:null, hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
-    renderHistorico();
-  } catch(e) {
-    if(e.message&&e.message.includes('rejected')) addLog('Transacao cancelada na Phantom.','red');
-    else addLog('Erro: '+e.message,'red');
-  }
-}
-
-function fecharPosicaoAuto() {
-  if(!posicaoAutoAberta) return;
-  const precoAtual = mercado.preco;
-  let pnl = 0;
-  if(tipoAutoAberto==='BUY') pnl = valorAutoTrade * ((precoAtual - precoEntradaAuto) / precoEntradaAuto);
-  else pnl = valorAutoTrade * ((precoEntradaAuto - precoAtual) / precoEntradaAuto);
-
-  autoPnlTotal += pnl;
-  posicaoAutoAberta = false;
-  tipoAutoAberto = null;
-  document.getElementById('btnFecharPos').style.display='none';
-  document.getElementById('autoPnl').textContent = (autoPnlTotal>=0?'+':'') + '$'+Math.abs(autoPnlTotal).toFixed(2);
-  document.getElementById('autoPnl').style.color = autoPnlTotal>=0?'var(--green)':'var(--red)';
-  document.getElementById('autoDot').className='auto-dot ativo';
-  document.getElementById('autoLabel').textContent='Posicao fechada — aguardando proximo sinal...';
-  addLog('Posicao fechada! P&L: '+(pnl>=0?'+':'')+'$'+pnl.toFixed(2), pnl>=0?'green':'red');
-  document.getElementById('autoPar').textContent = TOKENS[tokenAtual].par;
-}
-
 window.addEventListener('load',()=>{
   setTimeout(()=>{
     if(window.solana?.isPhantom&&window.solana.isConnected){
@@ -645,44 +467,6 @@ window.addEventListener('load',()=>{
     }
   },500);
 });
-</script>async function analisarIA(){
-  const content=document.getElementById('aiContent');
-  const t=TOKENS[tokenAtual], m=mercado;
-  content.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
-  try{
-    const r=await fetch('https://',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:'Analise '+t.par+' preco $'+m.preco.toFixed(2)+' RSI '+m.rsi+' variacao '+m.var24.toFixed(2)+'%. De recomendacao COMPRAR VENDER ou AGUARDAR em 3 frases em portugues.'}]})
-    });
-    const d=await r.json();
-    const texto=d.content?.[0]?.text||'Erro na analise.';
-    let sigLabel='Aguardar',sigClass='hold';
-    if(/comprar|compra|alta/i.test(texto)){sigLabel='Comprar '+t.nome;sigClass='long';}
-    else if(/vender|venda|baixa/i.test(texto)){sigLabel='Vender '+t.nome;sigClass='short';}
-    content.innerHTML='<div class="ai-response fade-in">'+texto+'</div><div style="margin-top:10px;"><span class="ai-signal '+sigClass+'">'+sigLabel+'</span></div>';
-  }catch(e){
-    content.innerHTML='<div class="ai-response" style="color:var(--red);">Erro: '+e.message+'</div>';
-  }
-}
-</body>async function analisarIA(){
-  const content=document.getElementById('aiContent');
-  const t=TOKENS[tokenAtual], m=mercado;
-  content.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
-  try{
-    const r=await fetch('/api/analyze',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token:t.nome,preco:m.preco,rsi:m.rsi,var24:m.var24})
-    });
-    const d=await r.json();
-    if(d.error) throw new Error(d.error);
-    let sigLabel='Aguardar',sigClass='hold';
-    if(d.sinal==='buy'){sigLabel='Comprar '+t.nome;sigClass='long';}
-    else if(d.sinal==='sell'){sigLabel='Vender '+t.nome;sigClass='short';}
-    content.innerHTML='<div class="ai-response fade-in">'+d.analise+'</div><div style="margin-top:10px;"><span class="ai-signal '+sigClass+'">'+sigLabel+'</span></div>';
-  }catch(e){
-    content.innerHTML='<div class="ai-response" style="color:var(--red);">Erro: '+e.message+'</div>';
-  }
-}
+</script>
+</body>
 </html>
