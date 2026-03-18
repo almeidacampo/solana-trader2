@@ -1,0 +1,13 @@
+{
+  "name": "solana-ai-trader",
+  "version": "1.0.0",
+  "description": "Solana AI Trader com Jupiter DEX",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.91.0",
+    "@jup-ag/api": "^6.0.0"
+  }
+}

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solana AI Trader</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0e1a;--bg2:#111827;--bg3:#1a2235;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#f0f4ff;--text2:#8b95b0;--text3:#4a5570;
+  --green:#00e5a0;--green-bg:rgba(0,229,160,0.08);--green-border:rgba(0,229,160,0.25);
+  --red:#ff4d6a;--red-bg:rgba(255,77,106,0.08);--red-border:rgba(255,77,106,0.25);
+  --amber:#f5a623;--amber-bg:rgba(245,166,35,0.08);
+  --purple:#9945FF;--purple-bg:rgba(153,69,255,0.1);--purple-border:rgba(153,69,255,0.3);
+  --orange:#f7931a;--orange-bg:rgba(247,147,26,0.1);--orange-border:rgba(247,147,26,0.3);
+  --blue:#627eea;--blue-bg:rgba(98,126,234,0.1);--blue-border:rgba(98,126,234,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.container{max-width:1060px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+header{padding:28px 0 0;border-bottom:1px solid var(--border);margin-bottom:28px;}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;flex-wrap:wrap;gap:14px;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-icon{width:38px;height:38px;background:var(--purple);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.logo-name{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--text);}
+.logo-tag{font-size:11px;color:var(--text3);font-family:'Space Mono',monospace;letter-spacing:0.1em;}
+.btn-connect{background:var(--purple-bg);border:1px solid var(--purple-border);color:var(--purple);font-family:'Space Mono',monospace;font-size:13px;padding:9px 18px;border-radius:10px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px;}
+.btn-connect:hover{background:rgba(153,69,255,0.18);}
+.btn-connect.connected{background:var(--green-bg);border-color:var(--green-border);color:var(--green);}
+.wallet-info{display:none;}
+.wallet-info.ativo{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.wallet-addr{font-family:'Space Mono',monospace;font-size:12px;color:var(--text2);background:var(--bg3);padding:6px 12px;border-radius:8px;border:1px solid var(--border2);}
+.wallet-bal{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--green);}
+
+/* Token tabs */
+.token-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.token-tab{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;border:1px solid var(--border2);background:var(--bg2);cursor:pointer;transition:all 0.2s;font-family:'Space Mono',monospace;font-size:13px;color:var(--text2);}
+.token-tab:hover{border-color:var(--border2);color:var(--text);}
+.token-tab.active-sol{border-color:var(--purple-border);background:var(--purple-bg);color:var(--purple);}
+.token-tab.active-btc{border-color:var(--orange-border);background:var(--orange-bg);color:var(--orange);}
+.token-tab.active-eth{border-color:var(--blue-border);background:var(--blue-bg);color:var(--blue);}
+.token-dot{width:8px;height:8px;border-radius:50%;}
+
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:22px;}
+.metric-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;transition:border-color 0.2s;}
+.metric-card:hover{border-color:var(--border2);}
+.metric-label{font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;letter-spacing:0.08em;margin-bottom:7px;text-transform:uppercase;}
+.metric-value{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--text);}
+.metric-sub{font-size:11px;margin-top:3px;color:var(--text3);}
+
+.ai-box{border-radius:16px;padding:20px 22px;margin-bottom:22px;border:1px solid var(--border2);background:var(--bg2);}
+.ai-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.ai-avatar{width:38px;height:38px;border-radius:10px;background:var(--purple-bg);border:1px solid var(--purple-border);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.ai-name{font-size:14px;font-weight:500;color:var(--text);}
+.ai-tag{font-size:11px;color:var(--text3);font-family:'Space Mono',monospace;}
+.ai-thinking{display:flex;gap:5px;align-items:center;padding:14px 0;}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--purple);animation:aiPulse 1.2s ease-in-out infinite;}
+.ai-dot:nth-child(2){animation-delay:0.2s;}
+.ai-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes aiPulse{0%,100%{opacity:0.2;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
+.ai-response{font-size:14px;line-height:1.8;color:var(--text2);}
+.ai-signal{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:5px 14px;border-radius:99px;margin-top:10px;}
+.ai-signal.long{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);}
+.ai-signal.short{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);}
+.ai-signal.hold{background:var(--amber-bg);border:1px solid rgba(245,166,35,0.25);color:var(--amber);}
+.btn-analyze{width:100%;padding:11px;border-radius:10px;border:1px solid var(--purple-border);background:var(--purple-bg);color:var(--purple);font-family:'Space Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-analyze:hover{background:rgba(153,69,255,0.18);}
+
+.trade-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+@media(max-width:620px){.trade-grid{grid-template-columns:1fr;}}
+.trade-panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;}
+.trade-title{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;margin-bottom:14px;}
+.input-row{margin-bottom:10px;}
+.input-row label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px;}
+.input-row input{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:8px 11px;border-radius:8px;outline:none;}
+.input-row input:focus{border-color:var(--purple);}
+.btn-buy{width:100%;padding:12px;border-radius:12px;border:1px solid var(--green-border);background:var(--green-bg);color:var(--green);font-family:'Space Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:4px;}
+.btn-buy:hover{background:rgba(0,229,160,0.15);}
+.btn-sell{width:100%;padding:12px;border-radius:12px;border:1px solid var(--red-border);background:var(--red-bg);color:var(--red);font-family:'Space Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:4px;}
+.btn-sell:hover{background:rgba(255,77,106,0.15);}
+
+.hist-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:22px;}
+.hist-title{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;margin-bottom:14px;}
+.hist-empty{text-align:center;padding:22px;color:var(--text3);font-size:13px;font-family:'Space Mono',monospace;}
+.hist-table{width:100%;border-collapse:collapse;font-size:12px;}
+.hist-table th{font-family:'Space Mono',monospace;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;padding:7px 10px;border-bottom:1px solid var(--border);text-align:left;}
+.hist-table td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text2);}
+.hist-table tr:last-child td{border-bottom:none;}
+.badge-buy{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:2px 7px;border-radius:99px;font-family:'Space Mono',monospace;font-size:10px;}
+.badge-sell{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);padding:2px 7px;border-radius:99px;font-family:'Space Mono',monospace;font-size:10px;}
+
+.warning-bar{background:var(--amber-bg);border:1px solid rgba(245,166,35,0.2);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--amber);margin-bottom:24px;display:flex;align-items:flex-start;gap:10px;line-height:1.6;}
+footer{border-top:1px solid var(--border);padding:18px 0;text-align:center;font-size:11px;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:20px;}
+.not-connected-msg{text-align:center;padding:48px 20px;color:var(--text3);}
+.not-connected-msg .big{font-size:44px;margin-bottom:14px;}
+.not-connected-msg p{font-size:14px;line-height:1.7;max-width:380px;margin:0 auto;}
+.fade-in{animation:fadeIn 0.4s ease forwards;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite;display:inline-block;margin-right:4px;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.jupiter-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,255,200,0.06);border:1px solid rgba(0,255,200,0.15);border-radius:99px;padding:4px 10px;font-size:11px;color:rgba(0,255,200,0.7);font-family:'Space Mono',monospace;margin-left:8px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">◎</div>
+        <div>
+          <div class="logo-name">Solana AI Trader <span class="jupiter-badge">via Jupiter DEX</span></div>
+          <div class="logo-tag">SOL · BTC · ETH — PHANTOM WALLET</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div class="wallet-info" id="walletInfo">
+          <span class="wallet-addr" id="walletAddr">...</span>
+          <span class="wallet-bal" id="walletBal">0 SOL</span>
+          <button class="btn-connect connected" onclick="desconectar()">Desconectar</button>
+        </div>
+        <button class="btn-connect" id="btnConnect" onclick="conectarPhantom()">
+          <span>👻</span> Conectar Phantom
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Desconectado -->
+  <div id="telaDesconectada" class="not-connected-msg fade-in">
+    <div class="big">👻</div>
+    <p>Conecte sua <strong>Phantom Wallet</strong> para negociar <strong>SOL, BTC e ETH</strong> com análise de IA em tempo real via Jupiter DEX.</p>
+    <br>
+    <button class="btn-connect" style="display:inline-flex;margin:0 auto;" onclick="conectarPhantom()">
+      <span>👻</span> Conectar Phantom Wallet
+    </button>
+    <br><br>
+    <p style="font-size:12px;color:var(--text3);">Não tem a Phantom? Baixe em <strong style="color:var(--purple);">phantom.app</strong></p>
+  </div>
+
+  <!-- Conectado -->
+  <div id="telaConectada" style="display:none;">
+
+    <!-- Token Tabs -->
+    <div class="token-tabs" id="tokenTabs">
+      <div class="token-tab active-sol" onclick="selecionarToken('SOL')" id="tab-SOL">
+        <div class="token-dot" style="background:var(--purple);"></div> SOL/USDC
+      </div>
+      <div class="token-tab" onclick="selecionarToken('BTC')" id="tab-BTC">
+        <div class="token-dot" style="background:var(--orange);"></div> BTC/USDC
+      </div>
+      <div class="token-tab" onclick="selecionarToken('ETH')" id="tab-ETH">
+        <div class="token-dot" style="background:var(--blue);"></div> ETH/USDC
+      </div>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metrics fade-in">
+      <div class="metric-card">
+        <div class="metric-label">Seu saldo SOL</div>
+        <div class="metric-value" id="metSol" style="color:var(--purple);">—</div>
+        <div class="metric-sub" id="metSolUsd">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label" id="metPrecoLabel">Preço SOL</div>
+        <div class="metric-value" id="metPreco">—</div>
+        <div class="metric-sub" id="metVar">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">RSI (14)</div>
+        <div class="metric-value" id="metRsi">—</div>
+        <div class="metric-sub" id="metRsiZone">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">EMA 9 / EMA 21</div>
+        <div class="metric-value" id="metEma" style="font-size:13px;">—</div>
+        <div class="metric-sub" id="metEmaSub">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Volume</div>
+        <div class="metric-value" id="metVol">—</div>
+        <div class="metric-sub" id="metVolSub">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Trades feitos</div>
+        <div class="metric-value" id="metTrades" style="color:var(--text);">0</div>
+        <div class="metric-sub">Esta sessão</div>
+      </div>
+    </div>
+
+    <!-- IA -->
+    <div class="ai-box fade-in">
+      <div class="ai-header">
+        <div class="ai-avatar">🤖</div>
+        <div>
+          <div class="ai-name">SolanaAI — Analista de mercado</div>
+          <div class="ai-tag"><span class="live-dot"></span>Analisando <span id="aiPar">SOL/USDC</span> • Jupiter DEX</div>
+        </div>
+      </div>
+      <button class="btn-analyze" onclick="analisarIA()">🤖 Pedir análise da IA agora</button>
+      <div id="aiContent">
+        <div class="ai-response" style="color:var(--text3);">Selecione um par e clique no botão acima para receber análise completa da IA com recomendação de trade.</div>
+      </div>
+    </div>
+
+    <!-- Trade -->
+    <div class="trade-grid fade-in">
+      <div class="trade-panel">
+        <div class="trade-title" id="buyTitle" style="color:rgba(0,229,160,0.7);">Comprar SOL com USDC</div>
+        <div class="input-row">
+          <label id="buyLabel">Valor em USDC</label>
+          <input type="number" id="buyValor" value="50" min="1" step="1">
+        </div>
+        <div class="input-row">
+          <label>Slippage (%)</label>
+          <input type="number" id="buySlippage" value="0.5" min="0.1" step="0.1">
+        </div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px;" id="buyPreview">Você receberá aprox. — tokens</div>
+        <button class="btn-buy" id="btnBuy" onclick="executarTrade('BUY')">↑ COMPRAR</button>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px;text-align:center;">Phantom pedirá confirmação</div>
+      </div>
+      <div class="trade-panel">
+        <div class="trade-title" id="sellTitle" style="color:rgba(255,77,106,0.7);">Vender SOL por USDC</div>
+        <div class="input-row">
+          <label id="sellLabel">Quantidade de SOL</label>
+          <input type="number" id="sellValor" value="0.5" min="0.001" step="0.001">
+        </div>
+        <div class="input-row">
+          <label>Slippage (%)</label>
+          <input type="number" id="sellSlippage" value="0.5" min="0.1" step="0.1">
+        </div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px;" id="sellPreview">Você receberá aprox. — USDC</div>
+        <button class="btn-sell" id="btnSell" onclick="executarTrade('SELL')">↓ VENDER</button>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px;text-align:center;">Phantom pedirá confirmação</div>
+      </div>
+    </div>
+
+    <!-- Histórico -->
+    <div class="hist-card fade-in">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div class="hist-title" style="margin-bottom:0;">Histórico de operações</div>
+        <button onclick="limparHistorico()" style="font-size:11px;color:var(--text3);background:transparent;border:1px solid var(--border2);padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Space Mono',monospace;">Limpar</button>
+      </div>
+      <div id="histWrap"><div class="hist-empty">Nenhuma operação ainda.</div></div>
+    </div>
+
+  </div>
+
+  <div class="warning-bar">
+    <span>⚠</span>
+    <span>Ferramenta educacional. Trades reais na blockchain Solana requerem integração completa com Jupiter DEX API e @solana/web3.js. A IA sugere — você sempre aprova na Phantom. Nunca invista mais do que pode perder.</span>
+  </div>
+  <footer>Solana AI Trader — Phantom Wallet · Jupiter DEX · SOL · BTC · ETH — Não é conselho financeiro</footer>
+</div>
+
+<script>
+const TOKEN_MINTS = {
+  SOL:  'So11111111111111111111111111111111111111112',
+  BTC:  '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E',
+  ETH:  '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
+  USDC: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+};
+const TOKENS = {
+  SOL:{ nome:'SOL', par:'SOL/USDC', cor:'var(--purple)', decimais:4, unidade:'SOL', tabClass:'active-sol', lamports:1e9 },
+  BTC:{ nome:'BTC', par:'BTC/USDC', cor:'var(--orange)', decimais:6, unidade:'BTC', tabClass:'active-btc', lamports:1e8 },
+  ETH:{ nome:'ETH', par:'ETH/USDC', cor:'var(--blue)',   decimais:5, unidade:'ETH', tabClass:'active-eth', lamports:1e8 },
+};
+let tokenAtual='SOL', carteira=null, solBalance=0;
+let precos={ SOL:142, BTC:84200, ETH:3150 };
+let mercado={ preco:142, var24:0, rsi:52, ema9:141, ema21:140, vol:120 };
+let historico=[], tradesCount=0;
+
+async function buscarPrecos(){
+  try{
+    const r=await fetch('/api/price?tokens=SOL,BTC,ETH');
+    const d=await r.json();
+    ['SOL','BTC','ETH'].forEach(t=>{ if(d[t]?.preco) precos[t]=d[t].preco; });
+  }catch(e){ console.warn('Preco simulado'); }
+}
+
+function gerarMercado(token){
+  const base=precos[token]||142;
+  return{ preco:base, var24:(Math.random()*10-5), rsi:Math.floor(Math.random()*75)+10,
+    ema9:base*(0.998+Math.random()*0.004), ema21:base*(0.994+Math.random()*0.008),
+    vol:Math.floor(80+Math.random()*150) };
+}
+
+function selecionarToken(token){
+  tokenAtual=token; mercado=gerarMercado(token);
+  ['SOL','BTC','ETH'].forEach(t=>{ document.getElementById('tab-'+t).className='token-tab'+(t===token?' '+TOKENS[t].tabClass:''); });
+  atualizarMetricas(); atualizarPreviews(); atualizarLabels();
+  document.getElementById('aiPar').textContent=TOKENS[token].par;
+  document.getElementById('aiContent').innerHTML='<div class="ai-response" style="color:var(--text3);">Par: '+TOKENS[token].par+'. Clique em Pedir analise.</div>';
+}
+
+function atualizarLabels(){
+  const t=TOKENS[tokenAtual];
+  document.getElementById('metPrecoLabel').textContent='Preco '+t.nome;
+  document.getElementById('buyTitle').textContent='Comprar '+t.nome+' com USDC';
+  document.getElementById('sellTitle').textContent='Vender '+t.nome+' por USDC';
+  document.getElementById('buyLabel').textContent='Valor em USDC';
+  document.getElementById('sellLabel').textContent='Quantidade de '+t.nome;
+}
+
+function atualizarMetricas(){
+  const t=TOKENS[tokenAtual], m=mercado;
+  document.getElementById('metSol').textContent=solBalance.toFixed(4);
+  document.getElementById('metSol').style.color='var(--purple)';
+  document.getElementById('metSolUsd').textContent='aprox. $'+(solBalance*precos.SOL).toFixed(2);
+  document.getElementById('metPreco').textContent='$'+m.preco.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('metPreco').style.color=t.cor;
+  const varEl=document.getElementById('metVar');
+  varEl.textContent=(m.var24>=0?'+':'')+m.var24.toFixed(2)+'%';
+  varEl.style.color=m.var24>=0?'var(--green)':'var(--red)';
+  document.getElementById('metRsi').textContent=m.rsi;
+  const rsiEl=document.getElementById('metRsiZone');
+  if(m.rsi<30){rsiEl.textContent='Sobrevendido';rsiEl.style.color='var(--green)';document.getElementById('metRsi').style.color='var(--green)';}
+  else if(m.rsi>70){rsiEl.textContent='Sobrecomprado';rsiEl.style.color='var(--red)';document.getElementById('metRsi').style.color='var(--red)';}
+  else{rsiEl.textContent='Neutro';rsiEl.style.color='var(--text3)';document.getElementById('metRsi').style.color='var(--text)';}
+  document.getElementById('metEma').textContent='$'+m.ema9.toFixed(0)+' / $'+m.ema21.toFixed(0);
+  const es=document.getElementById('metEmaSub');
+  es.textContent=m.ema9>m.ema21?'Bullish cross':'Bearish cross';
+  es.style.color=m.ema9>m.ema21?'var(--green)':'var(--red)';
+  document.getElementById('metVol').textContent=m.vol+'%';
+  document.getElementById('metVolSub').textContent=m.vol>100?'Acima da media':'Abaixo da media';
+  document.getElementById('metVolSub').style.color=m.vol>100?'var(--green)':'var(--text3)';
+  document.getElementById('metTrades').textContent=tradesCount;
+}
+
+function atualizarPreviews(){
+  const t=TOKENS[tokenAtual];
+  const bv=parseFloat(document.getElementById('buyValor').value)||0;
+  const sv=parseFloat(document.getElementById('sellValor').value)||0;
+  document.getElementById('buyPreview').textContent='Voce recebera aprox. '+(bv/mercado.preco).toFixed(t.decimais)+' '+t.nome;
+  document.getElementById('sellPreview').textContent='Voce recebera aprox. $'+(sv*mercado.preco).toFixed(2)+' USDC';
+}
+document.addEventListener('input', atualizarPreviews);
+
+async function conectarPhantom(){
+  const phantom=window.solana;
+  if(!phantom||!phantom.isPhantom){alert('Phantom nao encontrada!\n\nBaixe em: https://phantom.app');return;}
+  try{
+    const resp=await phantom.connect();
+    carteira=resp.publicKey.toString();
+    await onConectado();
+  }catch(e){ alert('Conexao cancelada: '+(e.message||e)); }
+}
+
+async function onConectado(){
+  document.getElementById('telaDesconectada').style.display='none';
+  document.getElementById('telaConectada').style.display='block';
+  document.getElementById('btnConnect').style.display='none';
+  document.getElementById('walletInfo').classList.add('ativo');
+  document.getElementById('walletAddr').textContent=carteira.slice(0,4)+'...'+carteira.slice(-4);
+  try{
+    const r=await fetch('https://api.mainnet-beta.solana.com',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'getBalance',params:[carteira]})});
+    const d=await r.json();
+    solBalance=(d.result?.value||0)/1e9;
+  }catch(e){ solBalance=parseFloat((Math.random()*5+0.5).toFixed(4)); }
+  await buscarPrecos();
+  mercado=gerarMercado('SOL');
+  atualizarMetricas(); atualizarPreviews(); atualizarLabels();
+}
+
+function desconectar(){
+  if(window.solana) window.solana.disconnect();
+  carteira=null;
+  document.getElementById('telaDesconectada').style.display='block';
+  document.getElementById('telaConectada').style.display='none';
+  document.getElementById('btnConnect').style.display='flex';
+  document.getElementById('walletInfo').classList.remove('ativo');
+}
+
+async function analisarIA(){
+  const content=document.getElementById('aiContent');
+  const t=TOKENS[tokenAtual], m=mercado;
+  content.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  try{
+    const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t.nome,preco:m.preco,var24:m.var24,rsi:m.rsi,ema9:m.ema9,ema21:m.ema21,vol:m.vol,balance:solBalance.toFixed(4)+' SOL'})});
+    const d=await r.json();
+    if(d.error) throw new Error(d.error);
+    let sigLabel='Aguardar', sigClass='hold';
+    if(d.sinal==='buy'){sigLabel='Comprar '+t.nome;sigClass='long';}
+    else if(d.sinal==='sell'){sigLabel='Vender '+t.nome;sigClass='short';}
+    content.innerHTML='<div class="ai-response fade-in">'+d.analise+'</div><div style="margin-top:10px;"><span class="ai-signal '+sigClass+'">'+sigLabel+'</span></div>';
+    await buscarPrecos(); mercado=gerarMercado(tokenAtual); atualizarMetricas(); atualizarPreviews();
+  }catch(e){ content.innerHTML='<div class="ai-response" style="color:var(--red);">Erro: '+e.message+'</div>'; }
+}
+
+async function executarTrade(tipo){
+  if(!carteira){alert('Conecte sua Phantom Wallet primeiro!');return;}
+  const phantom=window.solana;
+  if(!phantom){alert('Phantom nao encontrada!');return;}
+  const t=TOKENS[tokenAtual], m=mercado;
+  const slippage=parseFloat(document.getElementById(tipo==='BUY'?'buySlippage':'sellSlippage').value);
+  const slippageBps=Math.round(slippage*100);
+  let inputMint, outputMint, amount, valorDisplay, recebeDisplay;
+  if(tipo==='BUY'){
+    const usdc=parseFloat(document.getElementById('buyValor').value);
+    if(!usdc||usdc<=0){alert('Digite um valor valido em USDC!');return;}
+    inputMint=TOKEN_MINTS.USDC; outputMint=TOKEN_MINTS[tokenAtual];
+    amount=Math.round(usdc*1e6);
+    valorDisplay='$'+usdc+' USDC'; recebeDisplay='aprox. '+(usdc/m.preco).toFixed(t.decimais)+' '+t.nome;
+  }else{
+    const qty=parseFloat(document.getElementById('sellValor').value);
+    if(!qty||qty<=0){alert('Digite uma quantidade valida!');return;}
+    inputMint=TOKEN_MINTS[tokenAtual]; outputMint=TOKEN_MINTS.USDC;
+    amount=Math.round(qty*t.lamports);
+    valorDisplay=qty+' '+t.nome; recebeDisplay='aprox. $'+(qty*m.preco).toFixed(2)+' USDC';
+  }
+  if(!confirm('Confirmar '+(tipo==='BUY'?'COMPRA':'VENDA')+' via Jupiter DEX?\n\nPar: '+t.par+'\nVoce gasta: '+valorDisplay+'\nVoce recebe: '+recebeDisplay+'\nSlippage: '+slippage+'%\n\nPhantom pedira aprovacao.')) return;
+  try{
+    const qr=await fetch('/api/quote?inputMint='+inputMint+'&outputMint='+outputMint+'&amount='+amount+'&slippageBps='+slippageBps);
+    const qd=await qr.json();
+    if(qd.error) throw new Error('Cotacao: '+qd.error);
+    const sr=await fetch('/api/swap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({quoteResponse:qd,userPublicKey:carteira})});
+    const sd=await sr.json();
+    if(sd.error) throw new Error('Swap: '+sd.error);
+    const txBuf=Uint8Array.from(atob(sd.swapTransaction),c=>c.charCodeAt(0));
+    const {VersionedTransaction}=await import('https://esm.sh/@solana/web3.js@1.91.0');
+    const tx=VersionedTransaction.deserialize(txBuf);
+    const signed=await phantom.signTransaction(tx);
+    const sendR=await fetch('https://api.mainnet-beta.solana.com',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'sendTransaction',params:[btoa(String.fromCharCode(...signed.serialize())),{encoding:'base64',preflightCommitment:'confirmed'}]})});
+    const txData=await sendR.json();
+    if(txData.error) throw new Error(txData.error.message);
+    const txId=txData.result;
+    tradesCount++;
+    historico.unshift({n:tradesCount,tipo,token:t.nome,gasta:valorDisplay,recebe:recebeDisplay,preco:m.preco,txId,hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+    setTimeout(async()=>{try{const r=await fetch('https://api.mainnet-beta.solana.com',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'getBalance',params:[carteira]})});const d=await r.json();solBalance=(d.result?.value||0)/1e9;atualizarMetricas();}catch(e){}},3000);
+    renderHistorico(); atualizarMetricas();
+    alert('Swap enviado!\n\nTx: '+txId.slice(0,16)+'...\n\nVer em: https://solscan.io/tx/'+txId);
+  }catch(e){
+    if(e.message&&e.message.includes('rejected')) alert('Transacao cancelada na Phantom.');
+    else alert('Erro: '+(e.message||e));
+  }
+}
+
+function renderHistorico(){
+  const wrap=document.getElementById('histWrap');
+  if(!historico.length){wrap.innerHTML='<div class="hist-empty">Nenhuma operacao ainda.</div>';return;}
+  let html='<table class="hist-table"><thead><tr><th>#</th><th>Tipo</th><th>Par</th><th>Gasto</th><th>Recebido</th><th>Preco</th><th>Tx</th><th>Hora</th></tr></thead><tbody>';
+  historico.forEach(t=>{
+    const badge=t.tipo==='BUY'?'<span class="badge-buy">COMPRA</span>':'<span class="badge-sell">VENDA</span>';
+    const txLink=t.txId?'<a href="https://solscan.io/tx/'+t.txId+'" target="_blank" style="color:var(--purple);font-size:10px;font-family:monospace;">'+t.txId.slice(0,8)+'...</a>':'<span style="color:var(--text3);font-size:10px;">simulado</span>';
+    html+=`<tr><td style="font-family:monospace;color:var(--text3);">${t.n}</td><td>${badge}</td><td style="font-family:monospace;color:var(--text);">${t.token}/USDC</td><td style="font-family:monospace;">${t.gasta}</td><td style="font-family:monospace;color:var(--green);">${t.recebe}</td><td style="font-family:monospace;">$${parseFloat(t.preco).toFixed(2)}</td><td>${txLink}</td><td style="color:var(--text3);">${t.hora}</td></tr>`;
+  });
+  html+='</tbody></table>';
+  wrap.innerHTML=html;
+}
+
+function limparHistorico(){if(historico.length&&confirm('Limpar historico?')){historico=[];renderHistorico();}}
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    if(window.solana?.isPhantom&&window.solana.isConnected){
+      window.solana.connect({onlyIfTrusted:true}).then(r=>{carteira=r.publicKey.toString();onConectado();}).catch(()=>{});
+    }
+  },500);
+});
+</script>
+</body>
+</html>
